@@ -36,22 +36,22 @@ function convertFeature(features, geojson, options, index) {
         id = index || 0;
     }
     if (type === 'Point') {
-        convertPoint(coords, geometry);
+        convertPoint(coords, geometry,options.crs);
 
     } else if (type === 'MultiPoint') {
         for (var i = 0; i < coords.length; i++) {
-            convertPoint(coords[i], geometry);
+            convertPoint(coords[i], geometry,options.crs);
         }
 
     } else if (type === 'LineString') {
-        convertLine(coords, geometry, tolerance, false);
+        convertLine(coords, geometry, tolerance, false,options.crs);
 
     } else if (type === 'MultiLineString') {
         if (options.lineMetrics) {
             // explode into linestrings to be able to track metrics
             for (i = 0; i < coords.length; i++) {
                 geometry = [];
-                convertLine(coords[i], geometry, tolerance, false);
+                convertLine(coords[i], geometry, tolerance, false,options.crs);
                 features.push(createFeature(id, 'LineString', geometry, geojson.properties));
             }
             return;
@@ -84,19 +84,19 @@ function convertFeature(features, geojson, options, index) {
     features.push(createFeature(id, type, geometry, geojson.properties));
 }
 
-function convertPoint(coords, out) {
+function convertPoint(coords, out,crs) {
     out.push(projectX(coords[0]));
-    out.push(projectY(coords[1]));
+    crs==='cgcs2000'?out.push(projectYCGCS2000(coords[1])):out.push(projectY(coords[1]));
     out.push(0);
 }
 
-function convertLine(ring, out, tolerance, isPolygon) {
+function convertLine(ring, out, tolerance, isPolygon,crs) {
     var x0, y0;
     var size = 0;
 
     for (var j = 0; j < ring.length; j++) {
         var x = projectX(ring[j][0]);
-        var y = projectY(ring[j][1]);
+        var y = crs==='cgcs2000'?projectYCGCS2000(ring[j][1]):projectY(ring[j][1]);
 
         out.push(x);
         out.push(y);
@@ -123,10 +123,10 @@ function convertLine(ring, out, tolerance, isPolygon) {
     out.end = out.size;
 }
 
-function convertLines(rings, out, tolerance, isPolygon) {
+function convertLines(rings, out, tolerance, isPolygon,crs) {
     for (var i = 0; i < rings.length; i++) {
         var geom = [];
-        convertLine(rings[i], geom, tolerance, isPolygon);
+        convertLine(rings[i], geom, tolerance, isPolygon,crs);
         out.push(geom);
     }
 }
@@ -136,6 +136,11 @@ function projectX(x) {
 }
 
 function projectY(y) {
+    var sin = Math.sin(y * Math.PI / 180);
+    var y2 = 0.5 - 0.25 * Math.log((1 + sin) / (1 - sin)) / Math.PI;
+    return y2 < 0 ? 0 : y2 > 1 ? 1 : y2;
+}
+function projectYCGCS2000(params) {
     var y2 = 0.25 - (y / 360);
     return y2 < 0 ? 0 : y2 > 0.5 ? 0.5 : y2;
 }

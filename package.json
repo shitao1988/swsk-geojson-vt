@@ -1,8 +1,8 @@
 {
-  "name": "@cgcs2000/geojson-vt",
+  "name": "@shitao1988/swsk-geojson-vt",
   "version": "3.2.1",
   "description": "Slice GeoJSON data into vector tiles efficiently",
-  "homepage": "https://github.com/cgcs2000/geojson-vt",
+  "homepage": "https://github.com/shitao1988/swsk-geojson-vt",
   "keywords": [
     "spatial",
     "geojson",
@@ -12,7 +12,7 @@
   "author": "Vladimir Agafonkin",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cgcs2000/geojson-vt.git"
+    "url": "git://github.com/shitao1988/swsk-geojson-vt.git"
   },
   "module": "src/index.js",
   "main": "geojson-vt-dev.js",
