@@ -47,6 +47,7 @@ function getJSON(name) {
 function genTiles(data, options) {
     var index = geojsonvt(data, Object.assign({
         indexMaxZoom: 0,
+        crs: 'EPSG:3857',
         indexMaxPoints: 10000
     }, options));
 

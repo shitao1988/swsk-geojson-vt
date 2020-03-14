@@ -45,6 +45,7 @@ function GeoJSONVT(data, options) {
 }
 
 GeoJSONVT.prototype.options = {
+    crs: 'EPSG:3857',
     maxZoom: 14,            // max zoom to preserve detail on
     indexMaxZoom: 5,        // max zoom in the tile index
     indexMaxPoints: 100000, // max number of points per tile in the tile index
